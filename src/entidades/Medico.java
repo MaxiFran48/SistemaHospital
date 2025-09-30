@@ -16,7 +16,6 @@ import java.util.Objects;
 public class Medico extends Persona implements Serializable {
     private final Matricula matricula;
     private final EspecialidadMedica especialidad;
-    @Setter
     private Departamento departamento;
     private final List<Cita> citas = new ArrayList<>();
 

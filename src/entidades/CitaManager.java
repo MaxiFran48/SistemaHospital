@@ -153,6 +153,14 @@ public class CitaManager implements CitaService {
         }
     }
 
+    public List<Cita> getCitas() {
+        if (!citas.isEmpty()) {
+            return Collections.unmodifiableList(citas);
+        } else {
+            return Collections.emptyList();
+        }
+    }
+
     @Override
     public void cargarCitas(String filename, Map<String, Paciente> pacientes,
                             Map<String, Medico> medicos, Map<String, Sala> salas)

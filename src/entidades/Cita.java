@@ -15,14 +15,14 @@ import java.util.Objects;
 @ToString(exclude = {"paciente", "medico", "sala"})
 @Builder
 public class Cita implements Serializable {
+    @Setter
+    private Long id;
     private final Paciente paciente;
     private final Medico medico;
     private final Sala sala;
     private final LocalDateTime fechaHora;
     private final BigDecimal costo;
-    @Setter
     private EstadoCita estado;
-    @Setter
     private String observaciones;
 
     private Cita(CitaBuilder builder) {
@@ -84,32 +84,8 @@ public class Cita implements Serializable {
         }
     }
 
-    public Medico getMedico() {
-        return medico;
-    }
-
-    public Sala getSala() {
-        return sala;
-    }
-
-    public LocalDateTime getFechaHora() {
-        return fechaHora;
-    }
-
-    public BigDecimal getCosto() {
-        return costo;
-    }
-
-    public EstadoCita getEstado() {
-        return estado;
-    }
-
     public void setEstado(EstadoCita estado) {
         this.estado = Objects.requireNonNull(estado, "El estado no puede ser nulo");
-    }
-
-    public String getObservaciones() {
-        return observaciones;
     }
 
     public void setObservaciones(String observaciones) {

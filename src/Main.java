@@ -1,14 +1,12 @@
 //TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
 // click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
 import entidades.*;
+import repositorios.InMemoryRepository;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class Main {
     public static void main(String[] args) {
@@ -40,6 +38,9 @@ public class Main {
             // 8. Mostrar estadísticas finales
             mostrarEstadisticasFinales(hospital);
 
+            // 9. Cargar los datos en la base (InMemoryRepository)
+            probarRepositorio(citaManager);
+
             System.out.println("\n===== SISTEMA EJECUTADO EXITOSAMENTE =====");
 
         } catch (Exception e) {
@@ -65,10 +66,12 @@ public class Main {
                 .nombre("Cardiología")
                 .especialidad(EspecialidadMedica.CARDIOLOGIA)
                 .build();
+
         Departamento pediatria = Departamento.builder()
                 .nombre("Pediatría")
                 .especialidad(EspecialidadMedica.PEDIATRIA)
                 .build();
+
         Departamento traumatologia = Departamento.builder()
                 .nombre("Traumatología")
                 .especialidad(EspecialidadMedica.TRAUMATOLOGIA)
@@ -106,32 +109,32 @@ public class Main {
         // Crear médicos especialistas
         Medico cardiologo = Medico.builder()
                 .nombre("Carlos")
-                .apellido("González")
+                .apellido("Gonzáles")
                 .dni("12345678")
-                .fechaNacimiento(LocalDate.of(1975, 5, 15))
-                .tipoSangre(TipoSangre.A_POSITIVO)
-                .numeroMatricula("MP-12345")
                 .especialidad(EspecialidadMedica.CARDIOLOGIA)
+                .tipoSangre(TipoSangre.A_POSITIVO)
+                .fechaNacimiento(LocalDate.of(1975, 5, 15))
+                .numeroMatricula("MP-12345")
                 .build();
 
         Medico pediatra = Medico.builder()
                 .nombre("Ana")
                 .apellido("Martínez")
                 .dni("23456789")
-                .fechaNacimiento(LocalDate.of(1980, 8, 22))
-                .tipoSangre(TipoSangre.O_NEGATIVO)
-                .numeroMatricula("MP-23456")
                 .especialidad(EspecialidadMedica.PEDIATRIA)
+                .tipoSangre(TipoSangre.O_NEGATIVO)
+                .fechaNacimiento(LocalDate.of(1980, 8, 22))
+                .numeroMatricula("MP-23456")
                 .build();
 
         Medico traumatologo = Medico.builder()
                 .nombre("Luis")
                 .apellido("Rodríguez")
                 .dni("34567890")
-                .fechaNacimiento(LocalDate.of(1978, 3, 10))
-                .tipoSangre(TipoSangre.B_POSITIVO)
-                .numeroMatricula("MP-34567")
                 .especialidad(EspecialidadMedica.TRAUMATOLOGIA)
+                .tipoSangre(TipoSangre.B_POSITIVO)
+                .fechaNacimiento(LocalDate.of(1978, 3, 10))
+                .numeroMatricula("MP-34567")
                 .build();
 
         // Asignar médicos a sus departamentos correspondientes
@@ -166,30 +169,30 @@ public class Main {
                 .nombre("María")
                 .apellido("López")
                 .dni("11111111")
-                .fechaNacimiento(LocalDate.of(1985, 12, 5))
-                .tipoSangre(TipoSangre.A_POSITIVO)
-                .telefono("011-1111-1111")
                 .direccion("Calle Falsa 123")
+                .tipoSangre(TipoSangre.A_POSITIVO)
+                .fechaNacimiento(LocalDate.of(1985, 12, 5))
+                .telefono("011-1111-1111")
                 .build();
 
         Paciente pacientePediatrico = Paciente.builder()
                 .nombre("Pedro")
                 .apellido("García")
                 .dni("22222222")
-                .fechaNacimiento(LocalDate.of(2010, 6, 15))
-                .tipoSangre(TipoSangre.O_POSITIVO)
-                .telefono("011-2222-2222")
                 .direccion("Av. Siempreviva 456")
+                .tipoSangre(TipoSangre.O_POSITIVO)
+                .fechaNacimiento(LocalDate.of(2010, 6, 15))
+                .telefono("011-2222-2222")
                 .build();
 
         Paciente pacienteTraumatologico = Paciente.builder()
                 .nombre("Elena")
                 .apellido("Fernández")
                 .dni("33333333")
-                .fechaNacimiento(LocalDate.of(1992, 9, 28))
-                .tipoSangre(TipoSangre.AB_NEGATIVO)
-                .telefono("011-3333-3333")
                 .direccion("Belgrano 789")
+                .tipoSangre(TipoSangre.AB_NEGATIVO)
+                .fechaNacimiento(LocalDate.of(1992, 9, 28))
+                .telefono("011-3333-3333")
                 .build();
 
         // Registrar pacientes en el hospital
@@ -540,4 +543,55 @@ public class Main {
                     dep.getSalas().size() + " salas");
         }
     }
+
+    private static void probarRepositorio(CitaManager citaManager) {
+
+        // Inicializar repositorios
+        InMemoryRepository<Cita> citaRepository = new InMemoryRepository<>();
+        System.out.println("===== PROBAMOS EL REPOSITORIO =====");
+
+        // Guardar citas en el repositorio
+        for (Cita cita : citaManager.getCitas()) {
+            citaRepository.save(cita);
+        }
+
+        // Mostrar todas las citas
+        System.out.println("Todas las citas:");
+        List<Cita> todasLasCitas = citaRepository.findAll();
+        todasLasCitas.forEach(System.out::println);
+
+        // Buscar empresa por ID
+        Optional<Cita> citaEncontrada = citaRepository.findById(1L);
+        citaEncontrada.ifPresent(e -> System.out.println("Cita encontrada por ID 1: " + e));
+
+        // Actualizar empresa por ID
+        Cita citaActualizada = Cita.builder()
+                .id(1L)
+                .observaciones("Hola desde cita actualizada")
+                .sala(citaEncontrada.get().getSala())
+                .paciente(citaEncontrada.get().getPaciente())
+                .medico(citaEncontrada.get().getMedico())
+                .costo(citaEncontrada.get().getCosto())
+                .estado(citaEncontrada.get().getEstado())
+                .fechaHora(citaEncontrada.get().getFechaHora())
+                .build();
+
+        citaRepository.genericUpdate(1L, citaActualizada);
+        Optional<Cita> citaVerificada = citaRepository.findById(1L);
+        citaVerificada.ifPresent(e -> System.out.println("Cita después de la actualización: " + e));
+
+        // Eliminar cita por ID
+        citaRepository.genericDelete(1L);
+        Optional<Cita> citaEliminada = citaRepository.findById(1L);
+        if (citaEliminada.isEmpty()) {
+            System.out.println("La cita con ID 1 ha sido eliminada.");
+        }
+
+        // Mostrar todas las citas restantes
+        System.out.println("Todas las citas después de la eliminación:");
+        List<Cita> citasRestantes = citaRepository.findAll();
+        citasRestantes.forEach(System.out::println);
+
+    }
+
 }
